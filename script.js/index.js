@@ -29,7 +29,7 @@ const loadCatagories = async() =>{
 }
 
 // create loadVideos
-const loadVideos = async(searchText) =>{
+const loadVideos = async(searchText = "") =>{
     try {
         const res = await fetch(`https://openapi.programming-hero.com/api/phero-tube/videos?title=${searchText}`);
         const data = await res.json();
@@ -64,13 +64,11 @@ const loadDetails = async(videoId) =>{
 }
 
 const displayDetails = (video) =>{
-    console.log(video);
     const detailsContainer = document.getElementById("modal-content");
     detailsContainer.innerHTML = `
         <img class="mb-2" src="${video.thumbnail}" />
         <p>${video.description}</p>
     `
-    // document.getElementById("showModalData").click();
     document.getElementById("customModal").showModal();
 }
 
@@ -145,6 +143,23 @@ const displayVideos = (videos) =>{
 document.getElementById("searchVideo").addEventListener("keyup", (event)=>{
     loadVideos(event.target.value);
 })
+
+
+const sortVideos = async() =>{
+    const res = await fetch('https://openapi.programming-hero.com/api/phero-tube/videos');
+    const data = await res.json();
+    const sortVideo = data?.videos.sort((a, b)=>{
+        const first = parseInt(a?.others?.views.slice(0, -1)*1000);
+        const second = parseInt(b?.others?.views.slice(0, -1)*1000);
+
+        return  second - first;
+    });
+
+    displayVideos(sortVideo);
+}
+
+const sortBtn = document.getElementById("sortBtn");
+sortBtn.addEventListener("click", sortVideos);
 
 loadCatagories();
 loadVideos();
