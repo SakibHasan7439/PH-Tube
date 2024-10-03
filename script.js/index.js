@@ -6,6 +6,16 @@ function getTimeStr(time){
     return `${hour} hour ${remainingMinute} minute ${remainingSecond} second ago`;
 }
 
+const activeButton = () =>{
+    const buttons = document.getElementsByClassName("category-btn");
+
+    for(let button of buttons){
+        if(button.classList.contains("active")){
+            button.classList.remove("active");
+        }
+    }
+}
+
 // create loadCatagories
 const loadCatagories = async() =>{
     try {
@@ -34,7 +44,12 @@ const loadCategoryVideos = async(id) =>{
     try {
         const res = await fetch(`https://openapi.programming-hero.com/api/phero-tube/category/${id}`);
         const data = await res.json();
-        displayVideos(data.category);
+        (()=>{
+            activeButton();
+            const activeBtn = document.getElementById(`btn-${id}`);
+            activeBtn.classList.add("active");
+            displayVideos(data.category);
+        })();
 
     }catch(err){
         console.log("ERROR", err);
@@ -50,7 +65,7 @@ const displayCatagories = (data) =>{
         const buttonContainer = document.createElement("div");
         buttonContainer.innerHTML = 
         `
-            <button onclick="loadCategoryVideos(${item.category_id})" class="btn">
+            <button id="btn-${item.category_id}" onclick="loadCategoryVideos(${item.category_id})" class="btn category-btn">
                 ${item.category}
             </button>
         `
@@ -63,6 +78,20 @@ const displayCatagories = (data) =>{
 const displayVideos = (videos) =>{
     const videoContainer = document.getElementById("videos");
     videoContainer.innerHTML = "";
+
+    if(videos.length === 0){
+        videoContainer.classList.remove("grid")
+        videoContainer.innerHTML = `
+            <div class="flex w-full flex-col min-h-[300px] justify-center items-center">
+                <img class="mb-4" src="icons/Icon.png" alt="icon" />
+                <h3 class="text-slate-600 font-bold text-4xl text-center lg:w-[30rem]">Opos!! Sorry, There is no content here</h3>
+            </div>
+        `;
+        return;
+
+    }else {
+        videoContainer.classList.add("grid");
+    }
 
     const items = videos.map(video => {
         const card = document.createElement("div");
