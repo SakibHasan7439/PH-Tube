@@ -29,9 +29,9 @@ const loadCatagories = async() =>{
 }
 
 // create loadVideos
-const loadVideos = async() =>{
+const loadVideos = async(searchText) =>{
     try {
-        const res = await fetch('https://openapi.programming-hero.com/api/phero-tube/videos');
+        const res = await fetch(`https://openapi.programming-hero.com/api/phero-tube/videos?title=${searchText}`);
         const data = await res.json();
         displayVideos(data.videos);
 
@@ -55,6 +55,23 @@ const loadCategoryVideos = async(id) =>{
         console.log("ERROR", err);
     }
 
+}
+
+const loadDetails = async(videoId) =>{
+    const res = await fetch(`https://openapi.programming-hero.com/api/phero-tube/video/${videoId}`);
+    const data = await res.json();
+    displayDetails(data.video);
+}
+
+const displayDetails = (video) =>{
+    console.log(video);
+    const detailsContainer = document.getElementById("modal-content");
+    detailsContainer.innerHTML = `
+        <img class="mb-2" src="${video.thumbnail}" />
+        <p>${video.description}</p>
+    `
+    // document.getElementById("showModalData").click();
+    document.getElementById("customModal").showModal();
 }
 
 // show loadCatagories
@@ -117,12 +134,17 @@ const displayVideos = (videos) =>{
                         
                     </div>
                     <p class="text-gray-500">${video?.others?.views}</p>
+                    <button onclick="loadDetails('${video.video_id}')" class="btn btn-sm btn-error text-white">details</button>
                 </div>
             </div>
         `
         videoContainer.appendChild(card);
     })
 }
+
+document.getElementById("searchVideo").addEventListener("keyup", (event)=>{
+    loadVideos(event.target.value);
+})
 
 loadCatagories();
 loadVideos();
