@@ -160,6 +160,10 @@ const sortVideos = async() =>{
 
 const sortBtn = document.getElementById("sortBtn");
 sortBtn.addEventListener("click", sortVideos);
+const webpageLogo = document.getElementById("webpageLogo");
+webpageLogo.addEventListener("click", ()=>{
+    location.reload();
+})
 
 loadCatagories();
 loadVideos();
